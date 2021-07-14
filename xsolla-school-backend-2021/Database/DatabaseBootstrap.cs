@@ -44,7 +44,7 @@ namespace XsollaSchoolBackend.Database
                 new Item("Zelda BoTW - Poster", "Poster", 450),
                 new Item("Dark Souls Statue", "Statue", 3000),
                 new Item("Zelda Statue", "Statue", 4560),
-                new Item("Cyberpank 2077 Statue", "Statue", 7702),
+                new Item("Cyberpunk 2077 Statue", "Statue", 7702),
                 new Item("Pokemon Backpack", "Backpack", 2200),
                 new Item("Mario Backpack", "Backpack", 1999),
                 new Item("Crash Bandicoot Toy", "Toys", 2999),
