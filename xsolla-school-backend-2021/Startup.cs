@@ -22,7 +22,11 @@ namespace XsollaSchoolBackend
         {
             services.AddControllers();
 
-            string dbPath = Path.Combine(AppContext.BaseDirectory, "shop.db");
+            string dbFolderPath = Path.Combine(AppContext.BaseDirectory, "db");
+            Directory.CreateDirectory(dbFolderPath);
+            string dbPath = Path.Combine(dbFolderPath, "shop.db");
+
+
             services.AddSingleton(new Database.DatabaseConfig { Name = "Data Source=" + dbPath });
             services.AddSingleton<IDatabaseBootstrap, DatabaseBootstrap>();
             services.AddSingleton<IItemRepository, SqliteItemRepository>();

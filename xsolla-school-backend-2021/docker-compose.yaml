@@ -3,10 +3,12 @@ version: "3.9"
 services:
     aspnet_webapi:
         build: ./
+        volumes:
+            - ./publish/sqlite_db:/app/db
         restart: always
         ports: 
-        - 5000:80
+            - 5000:80
         environment:
-        - ASPNETCORE_URLS=http://80+
-        - ASPNETCORE_ENVIRONMENT=Development
+            - ASPNETCORE_URLS=http://80+
+            - ASPNETCORE_ENVIRONMENT=Development
         command: ["dotnet", "./xsolla-school-backend-2021.dll"]
