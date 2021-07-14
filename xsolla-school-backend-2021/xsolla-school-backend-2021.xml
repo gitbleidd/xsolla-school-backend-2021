@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>xsolla-school-backend-2021</name>
+    </assembly>
+    <members>
+        <member name="M:XsollaSchoolBackend.Controllers.MerchController.GetItemById(System.Int32)">
+            <summary>
+            Получение информации о товаре по его id
+            </summary>
+        </member>
+        <member name="M:XsollaSchoolBackend.Controllers.MerchController.GetItemBySku(System.String)">
+            <summary>
+            Получение информации о товаре по его sku
+            </summary>
+        </member>
+        <member name="M:XsollaSchoolBackend.Controllers.MerchController.GetCatalog(System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            Получение каталога товаров по частям, с возможностью сортировки по стоимости и типам
+            </summary>
+        </member>
+        <member name="M:XsollaSchoolBackend.Controllers.MerchController.CreateNewItem(XsollaSchoolBackend.Models.Item)">
+            <summary>
+            Создает товар на основе входящего JSON и возвращает его id
+            </summary>
+        </member>
+        <member name="M:XsollaSchoolBackend.Controllers.MerchController.UpdateItem(System.Int32,XsollaSchoolBackend.Models.Item)">
+            <summary>
+            Редактирование всех данных о товаре по его id
+            </summary>
+        </member>
+        <member name="M:XsollaSchoolBackend.Controllers.MerchController.UpdateItemBySku(System.String,XsollaSchoolBackend.Models.Item)">
+            <summary>
+            Редактирование всех данных о товаре по его sku
+            </summary>
+        </member>
+        <member name="M:XsollaSchoolBackend.Controllers.MerchController.DeleteItem(System.Int32)">
+            <summary>
+            Удаление товара по его id
+            </summary>
+        </member>
+        <member name="M:XsollaSchoolBackend.Controllers.MerchController.DeleteItemBySku(System.String)">
+            <summary>
+            Удаление товара по его sku
+            </summary>
+        </member>
+    </members>
+</doc>
