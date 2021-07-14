@@ -24,7 +24,7 @@ namespace XsollaSchoolBackend.Database
             using var connection = new SqliteConnection(_databaseConfig.Name);
 
             connection.Execute("CREATE TABLE IF NOT EXISTS catalog(" +
-            "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
+            "id INTEGER PRIMARY KEY," +
             "sku TEXT DEFAULT ''," +
             "name TEXT DEFAULT ''," +
             "type TEXT DEFAULT ''," +
