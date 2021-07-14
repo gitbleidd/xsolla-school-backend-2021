@@ -36,13 +36,16 @@ namespace XsollaSchoolBackend.Data
         {
             using var connection = new SqliteConnection(_databaseConfig.Name);
 
-            var res = connection.Execute("DELETE FROM catalog WHERE id = @id", new { id = id});
-            return res == 1;
+            var affectedRows = connection.Execute("DELETE FROM catalog WHERE id = @id", new { id = id});
+            return affectedRows == 1;
         }
 
         public bool DeleteItemBySku(string sku)
         {
-            throw new NotImplementedException();
+            using var connection = new SqliteConnection(_databaseConfig.Name);
+
+            var affectedRows = connection.Execute("DELETE FROM catalog WHERE sku = @sku", new { sku = sku });
+            return affectedRows == 1;
         }
 
         public List<Item> GetAllItems(string type, string sortBy, int page, int pageSize)
@@ -62,7 +65,7 @@ namespace XsollaSchoolBackend.Data
             }
 
             // Ограничение на размер страницы
-            if (pageSize < 1 || pageSize > 100)
+            if (pageSize < 1 || pageSize > 101)
                 pageSize = 5;
 
             string query;
@@ -100,16 +103,28 @@ namespace XsollaSchoolBackend.Data
 
         public bool UpdateItem(int id, Item updatedItem)
         {
+            // Генерируем SKU на основе полученных данных и пытаемся обновить в бд по id
             using var connection = new SqliteConnection(_databaseConfig.Name);
-            var res = connection.Query<Item>("UPDATE catalog SET sku = @Sku, name = @Name, type = @Type, count = @Count, price = @Price WHERE id = @id;", 
-                new { updatedItem, id }).ToList();
 
-            return res.Count == 1;
+            updatedItem.Sku = Utils.SkuUtil.GenerateSku(updatedItem, id);
+            var affectedRows = connection.Execute("UPDATE catalog SET sku = @sku, name = @name, type = @type, count = @count, price = @price WHERE id = @id;", 
+                new { sku = updatedItem.Sku, name = updatedItem.Name, type = updatedItem.Type, count = updatedItem.Count, price = updatedItem.Price, id = id });
+
+            return affectedRows == 1;
         }
 
         public bool UpdateItemBySku(string sku, Item updatedItem)
         {
-            throw new NotImplementedException();
+            // Находим id, необходим для SKU;
+            // Генерируем SKU на основе полученных данных и пытаемся обновить в бд по SKU
+            using var connection = new SqliteConnection(_databaseConfig.Name);
+
+            int id = connection.ExecuteScalar<int>("SELECT id FROM catalog WHERE sku = @searchSku", new { searchSku = sku });
+            updatedItem.Sku = Utils.SkuUtil.GenerateSku(updatedItem, id);
+            var affectedRows = connection.Execute("UPDATE catalog SET sku = @sku, name = @name, type = @type, count = @count, price = @price WHERE sku = @searchSku;",
+                new { sku = updatedItem.Sku, name = updatedItem.Name, type = updatedItem.Type, count = updatedItem.Count, price = updatedItem.Price, searchSku = sku });
+
+            return affectedRows == 1;
         }
     }
 }
