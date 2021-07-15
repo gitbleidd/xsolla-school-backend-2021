@@ -7,11 +7,15 @@ namespace XsollaSchoolBackend.Utils
 {
     public static class IdCounter
     {
+        private static readonly object idLock = new object();
         public static int CurrentId { get; private set; } = 0;
 
         public static int GetNextId()
         {
-            return CurrentId++;
+            lock (idLock)
+            {
+                return CurrentId++;
+            }
         }
     }
 }

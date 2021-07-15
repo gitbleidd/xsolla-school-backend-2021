@@ -11,22 +11,28 @@ namespace XsollaSchoolBackend.Data
 
         public InMemoryItemRepository()
         {
-            s_items = new List<Item> {
-                new Item("Pokemon T-shirt", "Clothes", 1000),
-                new Item("Doom T-shirt", "Clothes", 1000),
-                new Item("Sonic Hoodie", "Clothes", 2500),
-                new Item("Pokemon Cap", "Clothes", 1200),
-                new Item("Doom Cap", "Clothes", 1666),
-                new Item("Witcher 3 - Poster", "Poster", 500),
-                new Item("Zelda BoTW - Poster", "Poster", 450),
-                new Item("Dark Souls Statue", "Statue", 3000),
-                new Item("Zelda Statue", "Statue", 4560),
-                new Item("Cyberpunk 2077 Statue", "Statue", 7702),
-                new Item("Pokemon Backpack", "Backpack", 2200),
-                new Item("Mario Backpack", "Backpack", 1999),
-                new Item("Crash Bandicoot Toy", "Toys", 2999),
-                new Item("Hollow Knight Collector's Edition", "Games", 10999),
-                new Item("Animal Crossing", "Games", 5999)};
+            var items = new List<Item> {
+                new Item { Name = "Pokemon T-shirt", Type = "Clothes", Price = 1000},
+                new Item { Name = "Doom T-shirt", Type = "Clothes", Price = 1000},
+                new Item { Name = "Sonic Hoodie", Type = "Clothes", Price = 2500},
+                new Item { Name = "Pokemon Cap", Type = "Clothes", Price = 1200},
+                new Item { Name = "Doom Cap", Type = "Clothes", Price = 1666},
+                new Item { Name = "Witcher 3 - Poster", Type = "Poster", Price = 500},
+                new Item { Name = "Zelda BoTW - Poster", Type = "Poster", Price = 450},
+                new Item { Name = "Dark Souls Statue", Type = "Statue", Price = 3000},
+                new Item { Name = "Zelda Statue", Type = "Statue", Price = 4560},
+                new Item { Name = "Cyberpunk 2077 Statue", Type = "Statue", Price = 7702},
+                new Item { Name = "Pokemon Backpack", Type = "Backpack", Price = 2200},
+                new Item { Name = "Mario Backpack", Type = "Backpack", Price = 1999},
+                new Item { Name = "Crash Bandicoot Toy", Type = "Toys", Price = 2999},
+                new Item { Name = "Hollow Knight Collector's Edition", Type = "Games", Price = 10999},
+                new Item { Name = "Animal Crossing", Type = "Games", Price = 5999}
+            };
+
+            foreach (var item in items)
+            {
+                CreateNewItem(item);
+            }
         }
 
         // Получение информации о товаре по его id
@@ -54,6 +60,10 @@ namespace XsollaSchoolBackend.Data
             if (type != null)
                 data = data.Where(item => item.Type == type);
 
+            // Ограничение на размер страницы
+            if (pageSize < 1 || pageSize > 100)
+                pageSize = 5;
+
             switch (sortBy)
             {
                 case "price":
@@ -75,8 +85,11 @@ namespace XsollaSchoolBackend.Data
         // Создает товар на основе входящего JSON и возвращает его id
         public Item CreateNewItem(Item newItem)
         {
-            s_items.Add(new Item(newItem));
-            return s_items.Last();
+            newItem.Id = Utils.IdCounter.GetNextId();
+            newItem.Sku = Utils.SkuUtil.GenerateSku(newItem, newItem.Id);
+
+            s_items.Add(newItem);
+            return newItem;
         }
 
         // Редактирование всех данных о товаре по его id
@@ -85,7 +98,13 @@ namespace XsollaSchoolBackend.Data
             int index = s_items.FindIndex(item => item.Id == id);
             if (index == -1)
                 return false;
-            s_items[index].UpdateItem(updatedItem);
+
+            s_items[index].Name = updatedItem.Name;
+            s_items[index].Type = updatedItem.Type;
+            s_items[index].Price = updatedItem.Price;
+            s_items[index].Count = updatedItem.Count;
+            s_items[index].Sku = Utils.SkuUtil.GenerateSku(s_items[index], s_items[index].Id);
+
             return true;
         }
 
@@ -95,7 +114,13 @@ namespace XsollaSchoolBackend.Data
             var index = s_items.FindIndex(item => item.Sku == sku);
             if (index == -1)
                 return false;
-            s_items[index].UpdateItem(updatedItem);
+
+            s_items[index].Name = updatedItem.Name;
+            s_items[index].Type = updatedItem.Type;
+            s_items[index].Price = updatedItem.Price;
+            s_items[index].Count = updatedItem.Count;
+            s_items[index].Sku = Utils.SkuUtil.GenerateSku(s_items[index], s_items[index].Id);
+
             return true;
         }
 
