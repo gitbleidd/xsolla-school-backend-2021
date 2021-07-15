@@ -65,7 +65,7 @@ namespace XsollaSchoolBackend.Data
             }
 
             // Ограничение на размер страницы
-            if (pageSize < 1 || pageSize > 101)
+            if (pageSize < 1 || pageSize > 100)
                 pageSize = 5;
 
             string query;
