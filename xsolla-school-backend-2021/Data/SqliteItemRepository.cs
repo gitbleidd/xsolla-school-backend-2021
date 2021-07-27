@@ -55,10 +55,16 @@ namespace XsollaSchoolBackend.Data
             switch (sortBy)
             {
                 case "price":
-                    sortBy = "ASC";
+                    sortBy = "price ASC";
                     break;
                 case "-price":
-                    sortBy = "DESC";
+                    sortBy = "price DESC";
+                    break;
+                case "count":
+                    sortBy = "count ASC";
+                    break;
+                case "-count":
+                    sortBy = "count DESC";
                     break;
                 default:
                     return new List<Item>();
@@ -70,9 +76,9 @@ namespace XsollaSchoolBackend.Data
 
             string query;
             if (type != null)
-                query = $"SELECT * FROM catalog WHERE type = '{type}' ORDER BY price {sortBy} LIMIT @startId, @count;";
+                query = $"SELECT * FROM catalog WHERE type = '{type}' ORDER BY {sortBy} LIMIT @startId, @count;";
             else
-                query = $"SELECT * FROM catalog ORDER BY price {sortBy} LIMIT @startId, @count;";
+                query = $"SELECT * FROM catalog ORDER BY {sortBy} LIMIT @startId, @count;";
 
             var res = connection.Query<Item>(query, new { startId = (page - 1) * pageSize, count = pageSize });
 
