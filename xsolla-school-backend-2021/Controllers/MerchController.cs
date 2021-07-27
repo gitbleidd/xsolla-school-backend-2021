@@ -61,7 +61,12 @@ namespace XsollaSchoolBackend.Controllers
         public ActionResult<List<Item>> GetCatalog([FromQuery] string type, [FromQuery] string sortBy = "-price", [FromQuery] int page = 1, [FromQuery] int pageSize = 5)
         {
             var res = _repository.GetAllItems(type, sortBy, page, pageSize);
-            return Ok(res);
+
+            foreach (var header in res.headers)
+            {
+                Response.Headers.Add(header.Key, header.Value);
+            }
+            return Ok(res.items);
         }
 
         /// <summary>

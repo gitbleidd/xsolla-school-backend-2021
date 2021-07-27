@@ -48,7 +48,7 @@ namespace XsollaSchoolBackend.Data
             return affectedRows == 1;
         }
 
-        public List<Item> GetAllItems(string type, string sortBy, int page, int pageSize)
+        public ResponseItem<Item> GetAllItems(string type, string sortBy, int page, int pageSize)
         {
             using var connection = new SqliteConnection(_databaseConfig.Name);
 
@@ -67,22 +67,36 @@ namespace XsollaSchoolBackend.Data
                     sortBy = "count DESC";
                     break;
                 default:
-                    return new List<Item>();
+                    return new ResponseItem<Item>
+                    {
+                        items = new List<Item>(),
+                        headers = new Dictionary<string, string>()
+                    };
             }
 
             // Ограничение на размер страницы
             if (pageSize < 1 || pageSize > 100)
                 pageSize = 5;
 
-            string query;
+            string getItemsQuery;
+            string itemsCountQuery;
             if (type != null)
-                query = $"SELECT * FROM catalog WHERE type = '{type}' ORDER BY {sortBy} LIMIT @startId, @count;";
+            {
+                getItemsQuery = $"SELECT * FROM catalog WHERE type = '{type}' ORDER BY {sortBy} LIMIT @startId, @count;";
+                itemsCountQuery = $"SELECT COUNT(*) FROM catalog WHERE type = '{type}';";
+            }
             else
-                query = $"SELECT * FROM catalog ORDER BY {sortBy} LIMIT @startId, @count;";
+            {
+                getItemsQuery = $"SELECT * FROM catalog ORDER BY {sortBy} LIMIT @startId, @count;";
+                itemsCountQuery = "SELECT MAX(_ROWID_) FROM 'catalog' LIMIT 1;";
+            }
 
-            var res = connection.Query<Item>(query, new { startId = (page - 1) * pageSize, count = pageSize });
+            var items = connection.Query<Item>(getItemsQuery, new { startId = (page - 1) * pageSize, count = pageSize }).ToList();
+            int paginationCount = connection.ExecuteScalar<int>(itemsCountQuery); // Общее кол-во предметов по данному запросу
 
-            return res.ToList();
+            var headers = new Dictionary<string, string>();
+            headers.Add("X-Total-Count", paginationCount.ToString());
+            return new ResponseItem<Item> { items = items, headers = headers };
         }
 
         public Item GetItemById(int id)

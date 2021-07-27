@@ -9,7 +9,7 @@ namespace XsollaSchoolBackend.Data
     {
         public Item GetItemById(int id);
         public Item GetItemBySku(string sku);
-        public List<Item> GetAllItems(string type, string sortBy, int page, int pageSize);
+        public ResponseItem<Item> GetAllItems(string type, string sortBy, int page, int pageSize);
         public Item CreateNewItem(Item newItem);
         public bool UpdateItem(int id, Item updatedItem);
         public bool UpdateItemBySku(string sku, Item updatedItem);

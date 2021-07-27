@@ -54,7 +54,7 @@ namespace XsollaSchoolBackend.Data
         }
 
         // Получение каталога товаров по частям, с возможностью сортировки по стоимости и типам
-        public List<Item> GetAllItems(string type, string sortBy, int page, int pageSize)
+        public ResponseItem<Item> GetAllItems(string type, string sortBy, int page, int pageSize)
         {
             IEnumerable<Item> data = s_items;
             if (type != null)
@@ -72,14 +72,26 @@ namespace XsollaSchoolBackend.Data
                 case "-price":
                     data = data.OrderByDescending(item => item.Price);
                     break;
-                default:
-                    data = data.OrderByDescending(item => item.Price);
+                case "count":
+                    data = data.OrderBy(item => item.Count);
                     break;
+                case "-count":
+                    data = data.OrderByDescending(item => item.Count);
+                    break;
+                default:
+                    return new ResponseItem<Item>
+                    {
+                        items = new List<Item>(),
+                        headers = new Dictionary<string, string>()
+                    };
             }
 
-            var res = data.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            var items = data.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            int paginationCount = data.Count();
 
-            return res;
+            var headers = new Dictionary<string, string>();
+            headers.Add("X-Total-Count", paginationCount.ToString());
+            return new ResponseItem<Item> { items = items, headers = headers };
         }
 
         // Создает товар на основе входящего JSON и возвращает его id
