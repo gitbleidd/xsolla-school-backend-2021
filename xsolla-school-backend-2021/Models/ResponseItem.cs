@@ -7,8 +7,8 @@ namespace XsollaSchoolBackend.Models
 {
     public class ResponseItem<T>
     {
-        public List<T> items;
+        public List<T> Items { get; set; }
 
-        public Dictionary<string, string> headers;
+        public Dictionary<string, string> Headers { get; set; }
     }
 }

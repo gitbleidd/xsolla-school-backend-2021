@@ -62,11 +62,11 @@ namespace XsollaSchoolBackend.Controllers
         {
             var res = _repository.GetAllItems(type, sortBy, page, pageSize);
 
-            foreach (var header in res.headers)
+            foreach (var header in res.Headers)
             {
                 Response.Headers.Add(header.Key, header.Value);
             }
-            return Ok(res.items);
+            return Ok(res.Items);
         }
 
         /// <summary>

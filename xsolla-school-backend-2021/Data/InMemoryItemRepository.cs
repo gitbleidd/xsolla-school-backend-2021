@@ -81,8 +81,8 @@ namespace XsollaSchoolBackend.Data
                 default:
                     return new ResponseItem<Item>
                     {
-                        items = new List<Item>(),
-                        headers = new Dictionary<string, string>()
+                        Items = new List<Item>(),
+                        Headers = new Dictionary<string, string>()
                     };
             }
 
@@ -91,7 +91,7 @@ namespace XsollaSchoolBackend.Data
 
             var headers = new Dictionary<string, string>();
             headers.Add("X-Total-Count", paginationCount.ToString());
-            return new ResponseItem<Item> { items = items, headers = headers };
+            return new ResponseItem<Item> { Items = items, Headers = headers };
         }
 
         // Создает товар на основе входящего JSON и возвращает его id
