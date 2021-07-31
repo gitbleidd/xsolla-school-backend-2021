@@ -31,6 +31,7 @@ namespace XsollaSchoolBackend
             services.AddSingleton<IDatabaseBootstrap, DatabaseBootstrap>();
             services.AddSingleton<IItemRepository, SqliteItemRepository>();
             //services.AddSingleton<IItemRepository, InMemoryItemRepository>();
+            services.AddSingleton<ICommentRepository, CommentRepository>();
 
             services.AddSwaggerGen(c =>
             {

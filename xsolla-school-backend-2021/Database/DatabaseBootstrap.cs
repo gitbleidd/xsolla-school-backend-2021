@@ -11,12 +11,14 @@ namespace XsollaSchoolBackend.Database
     public class DatabaseBootstrap : IDatabaseBootstrap
     {
         private readonly DatabaseConfig _databaseConfig;
-        private readonly IItemRepository _repository;
+        private readonly IItemRepository _itemsRepo;
+        private readonly ICommentRepository _commentsRepo;
 
-        public DatabaseBootstrap(DatabaseConfig databaseConfig, IItemRepository repository)
+        public DatabaseBootstrap(DatabaseConfig databaseConfig, IItemRepository itemsRepo, ICommentRepository commentsRepo)
         {
             _databaseConfig = databaseConfig;
-            _repository = repository;
+            _itemsRepo = itemsRepo;
+            _commentsRepo = commentsRepo;
         }
 
         public void Setup()
@@ -25,13 +27,18 @@ namespace XsollaSchoolBackend.Database
 
             connection.Execute("CREATE TABLE IF NOT EXISTS catalog(" +
             "id INTEGER PRIMARY KEY," +
-            "sku TEXT DEFAULT ''," +
+            "sku TEXT UNIQUE," +
             "name TEXT DEFAULT ''," +
             "type TEXT DEFAULT ''," +
             "count INTEGER DEFAULT 0," +
-            "price REAL DEFAULT 0); ");
+            "price REAL DEFAULT 0);");
 
-            // Если таблица пустая, то заполнить ее
+            connection.Execute("CREATE TABLE IF NOT EXISTS comments(" +
+                "id INTEGER PRIMARY KEY, " +
+                "itemId INTEGER REFERENCES catalog(id), " +
+                "text TEXT NOT NULL);");
+
+            // Если таблица "catalog" пустая, то заполнить ее
             if (connection.Query("SELECT * FROM catalog LIMIT 15;").Count() == 0)
             {
                 var items = new List<Item> {
@@ -54,7 +61,28 @@ namespace XsollaSchoolBackend.Database
 
                 foreach (var item in items)
                 {
-                    _repository.CreateNewItem(item);
+                    _itemsRepo.CreateNewItem(item);
+                }
+            }
+
+            // Если таблица "comments" пустая, то заполнить ее
+            if (connection.Query("SELECT * FROM comments LIMIT 5;").Count() == 0)
+            {
+                var comments = new List<Comment> { 
+                    new Comment { ItemId = 1, Text = "Отличная футболка!" },
+                    new Comment { ItemId = 1, Text = "Хороший мерч, 9/10 ;)" },
+                    new Comment { ItemId = 1, Text = "Заказал себе и всей семье, спасибо Rest API Shop!!!!" },
+                    new Comment { ItemId = 4, Text = "Неплохое качество, но размер маловат, придется возвращать :(" },
+                    new Comment { ItemId = 4, Text = "Неожидал, что возможно такое хорошее качество для бейсболки, однозначно рекомендую!" },
+                    new Comment { ItemId = 6, Text = "Эх, отличный постер, аж все книги перечитать захотелось 😍" },
+                    new Comment { ItemId = 8, Text = "Пришло с небольшим сколом, но фигурка отличная. Praise the Sun!" },
+                    new Comment { ItemId = 8, Text = "Топ за свои деньги. Качество, детализация - все на высшем уровне" },
+                    new Comment { ItemId = 14, Text = "К великой игре - великое коллекционное издание. Пришло в целости и сохранности 👍" }
+                };
+
+                foreach (var comment in comments)
+                {
+                    _commentsRepo.CreateNewComment(comment.ItemId, comment);
                 }
             }
         }
