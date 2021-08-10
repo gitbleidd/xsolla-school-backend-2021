@@ -22,9 +22,9 @@ namespace XsollaSchoolBackend
         {
             services.AddControllers();
 
-            string dbFolderPath = Path.Combine(AppContext.BaseDirectory, "db");
+            string dbFolderPath = System.IO.Path.Combine(AppContext.BaseDirectory, "db");
             Directory.CreateDirectory(dbFolderPath);
-            string dbPath = Path.Combine(dbFolderPath, "shop.db");
+            string dbPath = System.IO.Path.Combine(dbFolderPath, "shop.db");
 
 
             services.AddSingleton(new Database.DatabaseConfig { Name = "Data Source=" + dbPath });
@@ -35,9 +35,10 @@ namespace XsollaSchoolBackend
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { 
-                    Title = "Система управления товарами", 
-                    Version = "v1", 
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Система управления товарами",
+                    Version = "v1",
                     Description = "Web API, в котором реализовано управление товарами с помощью RESTful API."
                 });
 
@@ -47,9 +48,13 @@ namespace XsollaSchoolBackend
                 });
 
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                var xmlPath = System.IO.Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
+
+            services
+                .AddGraphQLServer()
+                .AddQueryType<GraphQL.Query>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IDatabaseBootstrap dbBootstrap)
@@ -58,7 +63,7 @@ namespace XsollaSchoolBackend
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => 
+                app.UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "XsollaSchoolBackend v1");
                     c.DisplayOperationId();
@@ -71,7 +76,9 @@ namespace XsollaSchoolBackend
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-            });
+                endpoints.MapGraphQL()
+                .WithOptions(new HotChocolate.AspNetCore.GraphQLServerOptions { Tool = { Enable = env.IsDevelopment() } });
+        });
 
             dbBootstrap.Setup();
         }
