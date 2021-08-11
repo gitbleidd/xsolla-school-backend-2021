@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xsolla-school-backend-2021", "xsolla-school-backend-2021\xsolla-school-backend-2021.csproj", "{874CFDC4-39F3-487D-BFD2-653ABC88EE06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "xsolla-school-backend-2021", "xsolla-school-backend-2021\xsolla-school-backend-2021.csproj", "{874CFDC4-39F3-487D-BFD2-653ABC88EE06}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrpcService", "GrpcService\GrpcService.csproj", "{BDF5D28A-55BA-4074-BD93-8B933C4D8708}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{874CFDC4-39F3-487D-BFD2-653ABC88EE06}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{874CFDC4-39F3-487D-BFD2-653ABC88EE06}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{874CFDC4-39F3-487D-BFD2-653ABC88EE06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDF5D28A-55BA-4074-BD93-8B933C4D8708}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDF5D28A-55BA-4074-BD93-8B933C4D8708}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDF5D28A-55BA-4074-BD93-8B933C4D8708}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDF5D28A-55BA-4074-BD93-8B933C4D8708}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

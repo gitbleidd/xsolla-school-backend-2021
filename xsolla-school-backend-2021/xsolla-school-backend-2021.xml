@@ -44,5 +44,56 @@
             Удаление товара по его sku
             </summary>
         </member>
+        <member name="T:XsollaSchoolBackend.Proto.PurchaseReflection">
+            <summary>Holder for reflection information generated from Protos/purchase.proto</summary>
+        </member>
+        <member name="P:XsollaSchoolBackend.Proto.PurchaseReflection.Descriptor">
+            <summary>File descriptor for Protos/purchase.proto</summary>
+        </member>
+        <member name="F:XsollaSchoolBackend.Proto.RequestMsg.EmailFieldNumber">
+            <summary>Field number for the "email" field.</summary>
+        </member>
+        <member name="F:XsollaSchoolBackend.Proto.RequestMsg.OrderNumberFieldNumber">
+            <summary>Field number for the "orderNumber" field.</summary>
+        </member>
+        <member name="F:XsollaSchoolBackend.Proto.RequestMsg.ItemsFieldNumber">
+            <summary>Field number for the "items" field.</summary>
+        </member>
+        <member name="F:XsollaSchoolBackend.Proto.Item.ItemNameFieldNumber">
+            <summary>Field number for the "itemName" field.</summary>
+        </member>
+        <member name="F:XsollaSchoolBackend.Proto.Item.PriceFieldNumber">
+            <summary>Field number for the "price" field.</summary>
+        </member>
+        <member name="F:XsollaSchoolBackend.Proto.Item.CountFieldNumber">
+            <summary>Field number for the "count" field.</summary>
+        </member>
+        <member name="F:XsollaSchoolBackend.Proto.ReplyMsg.MessageFieldNumber">
+            <summary>Field number for the "message" field.</summary>
+        </member>
+        <member name="P:XsollaSchoolBackend.Proto.Purchase.Descriptor">
+            <summary>Service descriptor</summary>
+        </member>
+        <member name="T:XsollaSchoolBackend.Proto.Purchase.PurchaseClient">
+            <summary>Client for Purchase</summary>
+        </member>
+        <member name="M:XsollaSchoolBackend.Proto.Purchase.PurchaseClient.#ctor(Grpc.Core.ChannelBase)">
+            <summary>Creates a new client for Purchase</summary>
+            <param name="channel">The channel to use to make remote calls.</param>
+        </member>
+        <member name="M:XsollaSchoolBackend.Proto.Purchase.PurchaseClient.#ctor(Grpc.Core.CallInvoker)">
+            <summary>Creates a new client for Purchase that uses a custom <c>CallInvoker</c>.</summary>
+            <param name="callInvoker">The callInvoker to use to make remote calls.</param>
+        </member>
+        <member name="M:XsollaSchoolBackend.Proto.Purchase.PurchaseClient.#ctor">
+            <summary>Protected parameterless constructor to allow creation of test doubles.</summary>
+        </member>
+        <member name="M:XsollaSchoolBackend.Proto.Purchase.PurchaseClient.#ctor(Grpc.Core.ClientBase.ClientBaseConfiguration)">
+            <summary>Protected constructor to allow creation of configured clients.</summary>
+            <param name="configuration">The client configuration.</param>
+        </member>
+        <member name="M:XsollaSchoolBackend.Proto.Purchase.PurchaseClient.NewInstance(Grpc.Core.ClientBase.ClientBaseConfiguration)">
+            <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
+        </member>
     </members>
 </doc>

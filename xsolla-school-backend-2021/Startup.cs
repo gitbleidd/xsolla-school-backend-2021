@@ -55,6 +55,8 @@ namespace XsollaSchoolBackend
             services
                 .AddGraphQLServer()
                 .AddQueryType<GraphQL.Query>();
+
+            services.AddGrpc();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IDatabaseBootstrap dbBootstrap)
@@ -78,7 +80,8 @@ namespace XsollaSchoolBackend
                 endpoints.MapControllers();
                 endpoints.MapGraphQL()
                 .WithOptions(new HotChocolate.AspNetCore.GraphQLServerOptions { Tool = { Enable = env.IsDevelopment() } });
-        });
+                //endpoints.MapGrpcService<GreeterService>();
+            });
 
             dbBootstrap.Setup();
         }
