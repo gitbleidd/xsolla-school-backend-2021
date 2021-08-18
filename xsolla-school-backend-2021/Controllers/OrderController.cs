@@ -25,7 +25,7 @@ namespace XsollaSchoolBackend.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<int> CreateNewComment([FromBody] Order order)
+        public ActionResult<int> CreateOrder([FromBody] Order order)
         {
             // Формируем сообщение для gRpc
             var requestMsg = new RequestMsg

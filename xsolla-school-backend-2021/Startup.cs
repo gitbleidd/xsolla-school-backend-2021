@@ -28,12 +28,14 @@ namespace XsollaSchoolBackend
             Directory.CreateDirectory(dbFolderPath);
             string dbPath = System.IO.Path.Combine(dbFolderPath, "shop.db");
 
+            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
             services.AddSingleton(new Database.DatabaseConfig { Name = "Data Source=" + dbPath });
             services.AddSingleton<IDatabaseBootstrap, DatabaseBootstrap>();
             services.AddSingleton<IItemRepository, SqliteItemRepository>();
             //services.AddSingleton<IItemRepository, InMemoryItemRepository>();
             services.AddSingleton<ICommentRepository, CommentRepository>();
+            services.AddSingleton<IAccountRepository, AccountRepository>();
 
             services.AddSwaggerGen(c =>
             {
@@ -65,7 +67,7 @@ namespace XsollaSchoolBackend
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
-                // Cookie settings
+                // Auth cookie settings
                 .AddCookie(options =>
                 {
                     options.LoginPath = "/api/account/google-login";

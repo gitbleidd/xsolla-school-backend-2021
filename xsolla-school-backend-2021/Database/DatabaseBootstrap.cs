@@ -5,6 +5,7 @@ using Dapper;
 using Microsoft.Data.Sqlite;
 using XsollaSchoolBackend.Data;
 using XsollaSchoolBackend.Models;
+using XsollaSchoolBackend.Models.Tables;
 
 namespace XsollaSchoolBackend.Database
 {
@@ -13,12 +14,14 @@ namespace XsollaSchoolBackend.Database
         private readonly DatabaseConfig _databaseConfig;
         private readonly IItemRepository _itemsRepo;
         private readonly ICommentRepository _commentsRepo;
+        private readonly IAccountRepository _accountRepo;
 
-        public DatabaseBootstrap(DatabaseConfig databaseConfig, IItemRepository itemsRepo, ICommentRepository commentsRepo)
+        public DatabaseBootstrap(DatabaseConfig databaseConfig, IItemRepository itemsRepo, ICommentRepository commentsRepo, IAccountRepository accountRepo)
         {
             _databaseConfig = databaseConfig;
             _itemsRepo = itemsRepo;
             _commentsRepo = commentsRepo;
+            _accountRepo = accountRepo;
         }
 
         public void Setup()
@@ -35,10 +38,23 @@ namespace XsollaSchoolBackend.Database
 
             connection.Execute("CREATE TABLE IF NOT EXISTS comments(" +
                 "id INTEGER PRIMARY KEY, " +
-                "itemId INTEGER REFERENCES catalog(id), " +
+                "item_id INTEGER REFERENCES catalog(id), " +
                 "text TEXT NOT NULL);");
 
-            // Если таблица "catalog" пустая, то заполнить ее
+            connection.Execute("CREATE TABLE IF NOT EXISTS users(" +
+                "id INTEGER PRIMARY KEY, " +
+                "email TEXT UNIQUE NOT NULL, " +
+                "google_id TEXT UNIQUE NOT NULL," +
+                "role_id INTEGER DEFAULT 2," +
+                "FOREIGN KEY(role_id) REFERENCES roles(id) );");
+
+            connection.Execute("CREATE TABLE IF NOT EXISTS roles(" +
+                "id INTEGER PRIMARY KEY, " +
+                "role_name TEXT UNIQUE NOT NULL);");
+
+            // Заполняем исходными данными пустые таблицы:
+
+            // Таблица catalog
             if (connection.Query("SELECT * FROM catalog LIMIT 15;").Count() == 0)
             {
                 var items = new List<Item> {
@@ -65,7 +81,7 @@ namespace XsollaSchoolBackend.Database
                 }
             }
 
-            // Если таблица "comments" пустая, то заполнить ее
+            // Таблица comments
             if (connection.Query("SELECT * FROM comments LIMIT 5;").Count() == 0)
             {
                 var comments = new List<Comment> { 
@@ -84,6 +100,23 @@ namespace XsollaSchoolBackend.Database
                 {
                     _commentsRepo.CreateNewComment(comment.ItemId, comment);
                 }
+            }
+
+            // Таблица roles
+            if (connection.Query("SELECT * FROM roles LIMIT 5;").Count() == 0)
+            {
+                connection.ExecuteScalar<int>("INSERT INTO roles(id, role_name) VALUES(1, 'vendor');");
+                connection.ExecuteScalar("INSERT INTO roles(id, role_name) VALUES(2, 'consumer');");
+            }
+
+            // Таблица users
+            if (connection.Query("SELECT * FROM users LIMIT 5;").Count() == 0)
+            {
+                // Hint - как соотносятся id и название ролей:
+                // role_id = 1: vendor (полный доступ к взаимодействию с товарами).
+                // role_id = 2: consumer (только просмотр товаров).
+                connection.ExecuteScalar<int>("INSERT INTO users(email, google_id, role_id) VALUES('adonis7952@gmail.com', 'abcd', 1);");
+                connection.ExecuteScalar<int>("INSERT INTO users(email, google_id, role_id) VALUES('gitbleidd@gmail.com', 'ef', 2);");
             }
         }
     }

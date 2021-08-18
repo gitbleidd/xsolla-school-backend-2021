@@ -19,11 +19,13 @@ namespace XsollaSchoolBackend.Controllers
     [Authorize]
     public class MerchController : ControllerBase
     {
-        private readonly IItemRepository _repository;
+        private readonly IItemRepository _itemRepo;
+        private readonly IAccountRepository _accountRepo;
 
-        public MerchController(IItemRepository repository)
+        public MerchController(IItemRepository repository, IAccountRepository accountRepo)
         {
-            _repository = repository;
+            _itemRepo = repository;
+            _accountRepo = accountRepo;
         }
 
         /// <summary>
@@ -35,7 +37,13 @@ namespace XsollaSchoolBackend.Controllers
         [AllowAnonymous]
         public ActionResult<Item> GetItemById(int id)
         {
-            var res = _repository.GetItemById(id);
+            // Проверка авторизации
+            var userInfo = Utils.ClaimUtil.ParseClaims(User.Claims);
+            var userDbInfo = _accountRepo.GetUserByEmail(userInfo.Email);
+            if (userDbInfo == null || (userDbInfo.RoleName != "vendor" && userDbInfo.RoleName != "consumer"))
+                return Forbid();
+
+            var res = _itemRepo.GetItemById(id);
 
             if (res == null)
                 return NotFound();
@@ -48,10 +56,15 @@ namespace XsollaSchoolBackend.Controllers
         [HttpGet("sku/{sku}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [AllowAnonymous]
         public ActionResult<Item> GetItemBySku(string sku)
         {
-            var res = _repository.GetItemBySku(sku);
+            // Проверка авторизации
+            var userInfo = Utils.ClaimUtil.ParseClaims(User.Claims);
+            var userDbInfo = _accountRepo.GetUserByEmail(userInfo.Email);
+            if (userDbInfo == null || (userDbInfo.RoleName != "vendor" && userDbInfo.RoleName != "consumer"))
+                return Forbid();
+
+            var res = _itemRepo.GetItemBySku(sku);
             if (res == null)
                 return NotFound();
             return Ok(res);
@@ -62,10 +75,15 @@ namespace XsollaSchoolBackend.Controllers
         /// </summary>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        //[AllowAnonymous]
         public ActionResult<List<Item>> GetCatalog([FromQuery] string type, [FromQuery] string sortBy = "-price", [FromQuery] int page = 1, [FromQuery] int pageSize = 5)
-        { 
-            var res = _repository.GetAllItems(type, sortBy, page, pageSize);
+        {
+            // Проверка авторизации
+            var userInfo = Utils.ClaimUtil.ParseClaims(User.Claims);
+            var userDbInfo = _accountRepo.GetUserByEmail(userInfo.Email);
+            if (userDbInfo == null || (userDbInfo.RoleName != "vendor" && userDbInfo.RoleName != "consumer"))
+                return Forbid();
+
+            var res = _itemRepo.GetAllItems(type, sortBy, page, pageSize);
 
             foreach (var header in res.Headers)
             {
@@ -82,7 +100,13 @@ namespace XsollaSchoolBackend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<int> CreateNewItem([FromBody] Item newItem)
         {
-            var res = _repository.CreateNewItem(newItem);
+            // Проверка авторизации
+            var userInfo = Utils.ClaimUtil.ParseClaims(User.Claims);
+            var userDbInfo = _accountRepo.GetUserByEmail(userInfo.Email);
+            if (userDbInfo == null || userDbInfo.RoleName != "vendor")
+                return Forbid();
+
+            var res = _itemRepo.CreateNewItem(newItem);
             return Created("", res.Id);
         }
 
@@ -94,7 +118,13 @@ namespace XsollaSchoolBackend.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult UpdateItem(int id, [FromBody] Item updatedItem)
         {
-            var isUpdated = _repository.UpdateItem(id, updatedItem);
+            // Проверка авторизации
+            var userInfo = Utils.ClaimUtil.ParseClaims(User.Claims);
+            var userDbInfo = _accountRepo.GetUserByEmail(userInfo.Email);
+            if (userDbInfo == null || userDbInfo.RoleName != "vendor")
+                return Forbid();
+
+            var isUpdated = _itemRepo.UpdateItem(id, updatedItem);
             if (!isUpdated)
                 return NotFound();
             return NoContent();
@@ -108,7 +138,13 @@ namespace XsollaSchoolBackend.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult UpdateItemBySku(string sku, [FromBody] Item updatedItem)
         {
-            var isUpdated = _repository.UpdateItemBySku(sku, updatedItem);
+            // Проверка авторизации
+            var userInfo = Utils.ClaimUtil.ParseClaims(User.Claims);
+            var userDbInfo = _accountRepo.GetUserByEmail(userInfo.Email);
+            if (userDbInfo == null || userDbInfo.RoleName != "vendor")
+                return Forbid();
+
+            var isUpdated = _itemRepo.UpdateItemBySku(sku, updatedItem);
             if (!isUpdated)
                 return NotFound();
             return NoContent();
@@ -122,7 +158,13 @@ namespace XsollaSchoolBackend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult DeleteItem(int id)
         {
-            var isDeleted = _repository.DeleteItem(id);
+            // Проверка авторизации
+            var userInfo = Utils.ClaimUtil.ParseClaims(User.Claims);
+            var userDbInfo = _accountRepo.GetUserByEmail(userInfo.Email);
+            if (userDbInfo == null || userDbInfo.RoleName != "vendor")
+                return Forbid();
+
+            var isDeleted = _itemRepo.DeleteItem(id);
             if (!isDeleted)
                 return BadRequest();
             return NoContent();
@@ -136,7 +178,13 @@ namespace XsollaSchoolBackend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult DeleteItemBySku(string sku)
         {
-            var isDeleted = _repository.DeleteItemBySku(sku);
+            // Проверка авторизации
+            var userInfo = Utils.ClaimUtil.ParseClaims(User.Claims);
+            var userDbInfo = _accountRepo.GetUserByEmail(userInfo.Email);
+            if (userDbInfo == null || userDbInfo.RoleName != "vendor")
+                return Forbid();
+
+            var isDeleted = _itemRepo.DeleteItemBySku(sku);
             if (!isDeleted)
                 return BadRequest();
             return NoContent();

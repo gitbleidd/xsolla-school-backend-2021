@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Security.Claims;
+using XsollaSchoolBackend.Data;
+using XsollaSchoolBackend.Models.Tables;
 
 namespace XsollaSchoolBackend.Controllers
 {
@@ -18,6 +20,13 @@ namespace XsollaSchoolBackend.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
+        private readonly IAccountRepository _accountRepo;
+
+        public AccountController(IAccountRepository accountRepo)
+        {
+            _accountRepo = accountRepo;
+        }
+
         [HttpGet("google-login")]
         [AllowAnonymous]
         public IActionResult GoogleLogin(string returnUrl)
@@ -32,6 +41,34 @@ namespace XsollaSchoolBackend.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GoogleResponse(string returnUrl = "/")
         {
+            var res = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            if (!res.Succeeded)
+                return Unauthorized("Can't create ticket");
+
+            var claims = res.Principal.Identities.FirstOrDefault().Claims.Select(claim => new
+            {
+                claim.Issuer,
+                claim.OriginalIssuer,
+                claim.Type,
+                claim.Value
+            });
+
+
+            // Парсим данные от гугла
+            User user = new User();
+            foreach (var claim in claims)
+            {
+                if (claim.Type == ClaimTypes.Email)
+                    user.Email = claim.Value;
+                if (claim.Type == ClaimTypes.NameIdentifier)
+                    user.GoogleId = claim.Value;
+            }
+
+            var userInfo = _accountRepo.GetUserByEmail(user.Email);
+            if (userInfo == null)
+                _accountRepo.CreateNewUser(user);
+
             return Redirect(returnUrl);
         }
     }

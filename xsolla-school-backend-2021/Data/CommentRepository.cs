@@ -21,7 +21,7 @@ namespace XsollaSchoolBackend.Data
         public Comment CreateNewComment(int itemId, Comment comment)
         {
             using var connection = new SqliteConnection(_databaseConfig.Name);
-            var id = connection.ExecuteScalar<int>("INSERT INTO comments(itemId, text) " +
+            var id = connection.ExecuteScalar<int>("INSERT INTO comments(item_id, text) " +
                 "VALUES(@itemId, @text); SELECT last_insert_rowid();", new {itemId = itemId, text = comment.Text });
             return comment;
         }
@@ -37,7 +37,7 @@ namespace XsollaSchoolBackend.Data
         public List<Comment> GetAllComments(int itemId)
         {
             using var connection = new SqliteConnection(_databaseConfig.Name);
-            var res = connection.Query<Comment>("SELECT * FROM comments WHERE itemId = @itemId", new { itemId = itemId }).ToList();
+            var res = connection.Query<Comment>("SELECT * FROM comments WHERE item_id = @itemId", new { itemId = itemId }).ToList();
             return res;
         }
 
