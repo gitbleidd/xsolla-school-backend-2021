@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace XsollaSchoolBackend.Controllers
     [Produces(MediaTypeNames.Application.Json)]
     [Consumes(MediaTypeNames.Application.Json)]
     [ApiController]
+    [Authorize]
     public class MerchController : ControllerBase
     {
         private readonly IItemRepository _repository;
@@ -30,6 +32,7 @@ namespace XsollaSchoolBackend.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [AllowAnonymous]
         public ActionResult<Item> GetItemById(int id)
         {
             var res = _repository.GetItemById(id);
@@ -45,6 +48,7 @@ namespace XsollaSchoolBackend.Controllers
         [HttpGet("sku/{sku}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [AllowAnonymous]
         public ActionResult<Item> GetItemBySku(string sku)
         {
             var res = _repository.GetItemBySku(sku);
@@ -58,8 +62,9 @@ namespace XsollaSchoolBackend.Controllers
         /// </summary>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        //[AllowAnonymous]
         public ActionResult<List<Item>> GetCatalog([FromQuery] string type, [FromQuery] string sortBy = "-price", [FromQuery] int page = 1, [FromQuery] int pageSize = 5)
-        {
+        { 
             var res = _repository.GetAllItems(type, sortBy, page, pageSize);
 
             foreach (var header in res.Headers)

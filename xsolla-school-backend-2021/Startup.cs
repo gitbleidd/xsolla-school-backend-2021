@@ -1,14 +1,16 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 using XsollaSchoolBackend.Data;
@@ -58,6 +60,22 @@ namespace XsollaSchoolBackend
                 .AddMutationType<GraphQL.Mutation>();
 
             services.AddGrpc();
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+                // Cookie settings
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/api/account/google-login";
+                    options.Cookie.HttpOnly = true;
+                })
+                .AddGoogle(options =>
+                {
+                    options.ClientId = System.Environment.GetEnvironmentVariable("GoogleAuthId");
+                    options.ClientSecret = System.Environment.GetEnvironmentVariable("GoogleAuthSecret");
+                });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IDatabaseBootstrap dbBootstrap)
@@ -73,8 +91,11 @@ namespace XsollaSchoolBackend
                 });
             }
 
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
+
+            app.UseAuthentication();
             app.UseRouting();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
