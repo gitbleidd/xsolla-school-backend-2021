@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -78,6 +79,36 @@ namespace XsollaSchoolBackend.Controllers
         public ActionResult<int> CreateNewItem([FromBody] Item newItem)
         {
             var res = _repository.CreateNewItem(newItem);
+            
+            // Отправка сообщения сервису, проверяющему страницу созданного товара
+            var factory = new ConnectionFactory() { HostName = "localhost" };
+            using (var connection = factory.CreateConnection())
+            using (var channel = connection.CreateModel())
+            {
+                channel.ExchangeDeclare(exchange: "common-exchange",
+                    type: "direct",
+                    durable: true,
+                    autoDelete: false);
+
+                channel.QueueDeclare(queue: "common-queue",
+                                 durable: true,
+                                 exclusive: false,
+                                 autoDelete: false,
+                                 arguments: null);
+
+                channel.QueueBind(queue: "common-queue",
+                  exchange: "common-exchange",
+                  routingKey: "");
+
+                string message = $"https://localhost:5001/api/merch/{res.Id}";
+                var body = System.Text.Encoding.UTF8.GetBytes(message);
+
+                channel.BasicPublish(exchange: "common-exchange",
+                                 routingKey: "",
+                                 basicProperties: null,
+                                 body: body);
+            }
+
             return Created("", res.Id);
         }
 
