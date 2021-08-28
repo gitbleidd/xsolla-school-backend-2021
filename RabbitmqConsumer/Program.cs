@@ -33,13 +33,13 @@ namespace RabbitmqConsumer
                   exchange: "common-exchange",
                   routingKey: "");
 
-                InitDelayMessageRepeat();
+                InitDelayedMessageRepeat();
 
                 var consumer = new EventingBasicConsumer(channel);
                 consumer.Received += ConsumerReceivedCommonMessage;
 
                 channel.BasicConsume(queue: "common-queue",
-                                     autoAck: true,
+                                     autoAck: false,
                                      consumer: consumer);
 
                 Console.WriteLine("Press [enter] to exit.");
@@ -59,7 +59,7 @@ namespace RabbitmqConsumer
             {
                 using var client = new HttpClient();
                 HttpResponseMessage response = await client.GetAsync(message);
-                Console.WriteLine($"[Debug] Status code: {response.StatusCode}");
+                Console.WriteLine($"[Debug] Landing page status code: {response.StatusCode}");
                 if (response.IsSuccessStatusCode)
                     return;
             }
@@ -86,7 +86,7 @@ namespace RabbitmqConsumer
             Console.WriteLine($"Message will be repeated in {_messageDelayTimeInMs} ms.");
         }
 
-        private static void InitDelayMessageRepeat()
+        private static void InitDelayedMessageRepeat()
         {
             // Инициализирует queue, exchange для отправки сообщений с задержкой
 
