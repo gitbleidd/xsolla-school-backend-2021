@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mime;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using XsollaSchoolBackend.Data;
@@ -18,10 +21,12 @@ namespace XsollaSchoolBackend.Controllers
     public class MerchController : ControllerBase
     {
         private readonly IItemRepository _repository;
+        private readonly IDistributedCache _cache;
 
-        public MerchController(IItemRepository repository)
+        public MerchController(IItemRepository repository, IDistributedCache cache)
         {
             _repository = repository;
+            _cache = cache;
         }
 
         /// <summary>
@@ -32,8 +37,18 @@ namespace XsollaSchoolBackend.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<Item> GetItemById(int id)
         {
-            var res = _repository.GetItemById(id);
+            using var redis = ConnectionMultiplexer.Connect("localhost");
+            var db = redis.GetDatabase();
 
+            // Формат ключа: "page:[page url]:[date]"
+            string key = $"page:{HttpContext.Request.Path.Value}:{DateTime.Now.ToString("dd-MM-yyyy")}";
+            if (db.StringGet(key).IsNull)
+            {
+                db.StringSet(key, "0");
+            }
+            db.StringIncrement(key);
+
+            var res = _repository.GetItemById(id);
             if (res == null)
                 return NotFound();
             return Ok(res);

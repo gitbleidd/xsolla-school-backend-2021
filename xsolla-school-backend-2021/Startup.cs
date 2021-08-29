@@ -58,6 +58,12 @@ namespace XsollaSchoolBackend
                 .AddMutationType<GraphQL.Mutation>();
 
             services.AddGrpc();
+
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = "localhost:6379";
+                options.InstanceName = "Redis";
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IDatabaseBootstrap dbBootstrap)
