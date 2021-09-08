@@ -2,10 +2,10 @@ version: "3.9"
 
 services:
     aspnet_webapi:
-        build: ./
+        build: ./xsolla-school-backend-2021
         volumes:
             - ./publish/sqlite_db:/app/db
-        restart: always
+        restart: on-failure
         ports: 
             - 5000:80
         environment:
